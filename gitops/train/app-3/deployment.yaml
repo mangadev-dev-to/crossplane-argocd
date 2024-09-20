@@ -1,0 +1,67 @@
+---
+# Source: app-3/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-3
+  labels:
+    helm.sh/chart: app-3-1.0.0
+    app.kubernetes.io/name: app-3
+    app.kubernetes.io/instance: app-3
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: train
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: app-3
+    app.kubernetes.io/instance: app-3
+---
+# Source: app-3/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-3
+  labels:
+    helm.sh/chart: app-3-1.0.0
+    app.kubernetes.io/name: app-3
+    app.kubernetes.io/instance: app-3
+    app.kubernetes.io/version: "0.0.1"
+    app.kubernetes.io/managed-by: Helm
+  namespace: train
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: app-3
+      app.kubernetes.io/instance: app-3
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: app-3-1.0.0
+        app.kubernetes.io/name: app-3
+        app.kubernetes.io/instance: app-3
+        app.kubernetes.io/version: "0.0.1"
+        app.kubernetes.io/managed-by: Helm
+    spec:
+      containers:
+        - name: app-3
+          image: wagnermanganelli164/go-sample:0.0.1
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "0.1"
+              memory: 25Mi
+            requests:
+              cpu: "0.05"
+              memory: 20Mi

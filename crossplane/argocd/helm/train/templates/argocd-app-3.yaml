@@ -1,0 +1,18 @@
+apiVersion: applications.argocd.crossplane.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Values.project.name }}-app-3
+spec:
+  providerConfigRef:
+    name: argocd-provider
+  forProvider:
+    project: {{ .Values.project.name }}
+    destination:
+      namespace: {{ .Values.project.namespace }}
+      name: {{ .Values.project.clusterName }}
+    source:
+      repoURL: {{ .Values.infra.gitOpsRepoUrl }}
+      path: "gitops/{{ .Values.project.namespace }}/app-3"
+      targetRevision: HEAD
+    syncPolicy: 
+{{ .Values.global.syncPolicy | toYaml | indent 6 }}

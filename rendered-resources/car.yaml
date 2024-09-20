@@ -1,0 +1,142 @@
+---
+# Source: car/templates/argocd-app-1.yaml
+apiVersion: applications.argocd.crossplane.io/v1alpha1
+kind: Application
+metadata:
+  name: car-app-1
+spec:
+  providerConfigRef:
+    name: argocd-provider
+  forProvider:
+    project: car
+    destination:
+      namespace: car
+      name: in-cluster
+    source:
+      repoURL: https://github.com/mangadev-dev-to/crossplane-argocd
+      path: "gitops/car/app-1"
+      targetRevision: HEAD
+    syncPolicy: 
+      automated:
+        prune: true
+        selfHeal: true
+      retry:
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 3m0s
+        limit: 2
+      syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+---
+# Source: car/templates/argocd-app-2.yaml
+apiVersion: applications.argocd.crossplane.io/v1alpha1
+kind: Application
+metadata:
+  name: car-app-2
+spec:
+  providerConfigRef:
+    name: argocd-provider
+  forProvider:
+    project: car
+    destination:
+      namespace: car
+      name: in-cluster
+    source:
+      repoURL: https://github.com/mangadev-dev-to/crossplane-argocd
+      path: "gitops/car/app-2"
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        prune: true
+        selfHeal: true
+      retry:
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 3m0s
+        limit: 2
+      syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+---
+# Source: car/templates/argocd-app-3.yaml
+apiVersion: applications.argocd.crossplane.io/v1alpha1
+kind: Application
+metadata:
+  name: car-app-3
+spec:
+  providerConfigRef:
+    name: argocd-provider
+  forProvider:
+    project: car
+    destination:
+      namespace: car
+      name: in-cluster
+    source:
+      repoURL: https://github.com/mangadev-dev-to/crossplane-argocd
+      path: "gitops/car/app-3"
+      targetRevision: HEAD
+    syncPolicy: 
+      automated:
+        prune: true
+        selfHeal: true
+      retry:
+        backoff:
+          duration: 5s
+          factor: 2
+          maxDuration: 3m0s
+        limit: 2
+      syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+---
+# Source: car/templates/namespace.yaml
+apiVersion: kubernetes.crossplane.io/v1alpha2
+kind: Object
+metadata:
+  name: car-namespace
+  namespace: crossplane-argocd
+spec:
+  forProvider:
+    manifest:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: car
+        annotations:
+          "helm.sh/hook": "pre-install,post-delete"
+          "helm.sh/hook-weight": "0"  # Ensures it runs before any other resources
+        labels:
+          app.kubernetes.io/part-of: car
+  providerConfigRef:
+    name: kubernetes-provider
+---
+# Source: car/templates/argocd-project.yaml
+apiVersion: projects.argocd.crossplane.io/v1alpha1
+kind: Project
+metadata:
+  name: car
+  annotations:
+    "helm.sh/hook": "pre-install,post-delete"
+    "helm.sh/hook-weight": "1"  # Runs after namespace is created and before it is deleted
+spec:
+  forProvider:
+    description: Car Project
+    destinations:
+      - namespace: car
+        server: '*'
+    sourceRepos:
+      - '*'
+  providerConfigRef:
+    name: argocd-provider

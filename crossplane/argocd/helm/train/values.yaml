@@ -1,0 +1,5 @@
+project:
+  name: train
+  desc: "Train Project"
+  namespace: train
+  clusterName: in-cluster

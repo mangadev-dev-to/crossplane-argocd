@@ -1,0 +1,5 @@
+project:
+  name: car
+  desc: "Car Project"
+  namespace: car
+  clusterName: in-cluster

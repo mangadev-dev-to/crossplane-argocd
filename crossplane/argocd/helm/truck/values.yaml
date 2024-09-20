@@ -1,0 +1,5 @@
+project:
+  name: truck
+  desc: "Truck Project"
+  namespace: truck
+  clusterName: in-cluster
